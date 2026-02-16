@@ -175,6 +175,20 @@
   .glass {
     @apply bg-background/80 backdrop-blur-xl;
   }
+
+  .clip-reveal {
+    clip-path: inset(0 0 0 0);
+    transition: clip-path 1s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .line-accent {
+    @apply relative;
+  }
+
+  .line-accent::before {
+    content: '';
+    @apply absolute -left-6 top-0 w-px h-full bg-accent/30;
+  }
 }
 
 @layer utilities {

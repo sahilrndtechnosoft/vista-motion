@@ -1,4 +1,5 @@
 import HeroSection from "@/components/home/HeroSection";
+import HorizontalMarquee from "@/components/HorizontalMarquee";
 import FeaturedProjects from "@/components/home/FeaturedProjects";
 import StatsSection from "@/components/home/StatsSection";
 import AboutPreview from "@/components/home/AboutPreview";
@@ -10,6 +11,15 @@ const Index = () => {
   return (
     <main>
       <HeroSection />
+      {/* Marquee divider */}
+      <div className="py-6 bg-secondary border-y border-secondary-foreground/10 overflow-hidden">
+        <HorizontalMarquee
+          text="Luxury Living ✦ Bespoke Design ✦ Architectural Excellence ✦ Premium Estates"
+          className="label-text text-secondary-foreground/30"
+          speed={35}
+          separator=""
+        />
+      </div>
       <FeaturedProjects />
       <StatsSection />
       <AboutPreview />
