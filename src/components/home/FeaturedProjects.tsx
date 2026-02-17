@@ -1,12 +1,16 @@
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ArrowUpRight } from "lucide-react";
 import { motion, useScroll, useTransform, useInView } from "framer-motion";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import AnimatedSection from "@/components/AnimatedSection";
 import TextReveal from "@/components/TextReveal";
 import project1 from "@/assets/project-1.jpg";
 import project2 from "@/assets/project-2.jpg";
 import project3 from "@/assets/project-3.jpg";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const projects = [
   {
@@ -33,68 +37,89 @@ const projects = [
 ];
 
 const ProjectCard = ({ project, index }: { project: typeof projects[0]; index: number }) => {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!ref.current) return;
+
+    const ctx = gsap.context(() => {
+      // Card entrance
+      gsap.fromTo(
+        ref.current,
+        { y: 100, opacity: 0, rotateX: -8 },
+        {
+          y: 0,
+          opacity: 1,
+          rotateX: 0,
+          duration: 1.2,
+          delay: index * 0.15,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: ref.current,
+            start: "top 88%",
+            toggleActions: "play none none none",
+          },
+        }
+      );
+
+      // Image parallax on scroll
+      const img = ref.current!.querySelector("img");
+      if (img) {
+        gsap.to(img, {
+          yPercent: -12,
+          ease: "none",
+          scrollTrigger: {
+            trigger: ref.current,
+            start: "top bottom",
+            end: "bottom top",
+            scrub: 1.5,
+          },
+        });
+      }
+    }, ref);
+
+    return () => ctx.revert();
+  }, [index]);
 
   return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 80, rotateX: -8 }}
-      animate={isInView ? { opacity: 1, y: 0, rotateX: 0 } : {}}
-      transition={{
-        duration: 0.9,
-        delay: index * 0.2,
-        ease: [0.22, 1, 0.36, 1],
-      }}
-      style={{ perspective: "1000px" }}
-    >
+    <div ref={ref} style={{ perspective: "1000px", opacity: 0 }}>
       <Link to={`/projects/${project.id}`} className="group block">
         <div className="relative overflow-hidden aspect-[3/4] mb-6">
-          <motion.img
+          <img
             src={project.image}
             alt={project.title}
-            className="w-full h-full object-cover will-change-transform"
+            className="w-[110%] h-[120%] object-cover will-change-transform"
             loading="lazy"
-            whileHover={{ scale: 1.08 }}
-            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
           />
-          {/* Reveal overlay */}
+          {/* Curtain reveal */}
           <motion.div
             className="absolute inset-0 bg-secondary"
             initial={{ scaleY: 1 }}
-            animate={isInView ? { scaleY: 0 } : { scaleY: 1 }}
+            whileInView={{ scaleY: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 1, delay: index * 0.2 + 0.3, ease: [0.22, 1, 0.36, 1] }}
             style={{ originY: 0 }}
           />
           {/* Hover overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-secondary/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-          <motion.div
-            className="absolute bottom-6 left-6 right-6 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-4 group-hover:translate-y-0"
-          >
+          <div className="absolute bottom-6 left-6 right-6 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-4 group-hover:translate-y-0">
             <span className="inline-flex items-center gap-2 label-text text-secondary-foreground">
               View Project <ArrowUpRight size={14} />
             </span>
-          </motion.div>
+          </div>
         </div>
-        <motion.p
-          className="label-text text-muted-foreground mb-2"
-          initial={{ opacity: 0, x: -20 }}
-          animate={isInView ? { opacity: 1, x: 0 } : {}}
-          transition={{ duration: 0.6, delay: index * 0.2 + 0.5 }}
-        >
-          {project.category}
-        </motion.p>
+        <p className="label-text text-muted-foreground mb-2">{project.category}</p>
         <h3 className="heading-sm text-foreground group-hover:text-accent transition-colors duration-300">
           {project.title}
         </h3>
         <p className="body-md text-muted-foreground mt-1">{project.location}</p>
       </Link>
-    </motion.div>
+    </div>
   );
 };
 
 const FeaturedProjects = () => {
-  const sectionRef = useRef(null);
+  const sectionRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start end", "end start"],
@@ -118,7 +143,7 @@ const FeaturedProjects = () => {
         <AnimatedSection delay={0.3} direction="right">
           <Link
             to="/projects"
-            className="mt-6 md:mt-0 inline-flex items-center gap-2 label-text text-foreground btn-underline"
+            className="mt-6 md:mt-0 inline-flex items-center gap-2 label-text text-foreground link-underline-grow"
           >
             View All Projects <ArrowUpRight size={16} />
           </Link>

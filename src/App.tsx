@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -8,6 +7,7 @@ import { AnimatePresence } from "framer-motion";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import PageTransition from "@/components/PageTransition";
+import useSmoothScroll from "@/hooks/useSmoothScroll";
 import Index from "./pages/Index";
 import About from "./pages/About";
 import Projects from "./pages/Projects";
@@ -17,14 +17,6 @@ import Career from "./pages/Career";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
-
-const ScrollToTop = () => {
-  const { pathname } = useLocation();
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [pathname]);
-  return null;
-};
 
 const AnimatedRoutes = () => {
   const location = useLocation();
@@ -43,14 +35,16 @@ const AnimatedRoutes = () => {
   );
 };
 
-const AppContent = () => (
-  <>
-    <ScrollToTop />
-    <Navbar />
-    <AnimatedRoutes />
-    <Footer />
-  </>
-);
+const AppContent = () => {
+  useSmoothScroll();
+  return (
+    <>
+      <Navbar />
+      <AnimatedRoutes />
+      <Footer />
+    </>
+  );
+};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
