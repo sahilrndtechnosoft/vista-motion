@@ -1,6 +1,7 @@
 import HeroSection from "@/components/home/HeroSection";
 import HorizontalMarquee from "@/components/HorizontalMarquee";
 import FeaturedProjects from "@/components/home/FeaturedProjects";
+import HorizontalGallery from "@/components/home/HorizontalGallery";
 import StatsSection from "@/components/home/StatsSection";
 import AboutPreview from "@/components/home/AboutPreview";
 import WhyChooseUs from "@/components/home/WhyChooseUs";
@@ -21,6 +22,7 @@ const Index = () => {
         />
       </div>
       <FeaturedProjects />
+      <HorizontalGallery />
       <StatsSection />
       <AboutPreview />
       <WhyChooseUs />

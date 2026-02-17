@@ -1,8 +1,12 @@
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import { motion, useInView } from "framer-motion";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import TextReveal from "@/components/TextReveal";
 import AnimatedSection from "@/components/AnimatedSection";
 import { Shield, Gem, Leaf, Award } from "lucide-react";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const reasons = [
   {
@@ -32,8 +36,58 @@ const reasons = [
 ];
 
 const WhyChooseUs = () => {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const ref = useRef<HTMLDivElement>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!gridRef.current) return;
+
+    const ctx = gsap.context(() => {
+      const cards = gridRef.current!.querySelectorAll(".why-card");
+      
+      cards.forEach((card, i) => {
+        gsap.fromTo(
+          card,
+          { y: 80, opacity: 0, scale: 0.95 },
+          {
+            y: 0,
+            opacity: 1,
+            scale: 1,
+            duration: 1,
+            delay: i * 0.12,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: card,
+              start: "top 88%",
+              toggleActions: "play none none none",
+            },
+          }
+        );
+
+        // Bottom accent line
+        const line = card.querySelector(".accent-line");
+        if (line) {
+          gsap.fromTo(
+            line,
+            { scaleX: 0 },
+            {
+              scaleX: 1,
+              duration: 0.8,
+              delay: i * 0.12 + 0.5,
+              ease: "power2.out",
+              scrollTrigger: {
+                trigger: card,
+                start: "top 85%",
+                toggleActions: "play none none none",
+              },
+            }
+          );
+        }
+      });
+    }, gridRef);
+
+    return () => ctx.revert();
+  }, []);
 
   return (
     <section ref={ref} className="section-padding section-gap bg-background overflow-hidden">
@@ -50,47 +104,34 @@ const WhyChooseUs = () => {
         </TextReveal>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-0 border-t border-l border-border">
+      <div ref={gridRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-0 border-t border-l border-border">
         {reasons.map((reason, i) => (
-          <motion.div
+          <div
             key={reason.title}
-            initial={{ opacity: 0, y: 60 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{
-              duration: 0.8,
-              delay: i * 0.15,
-              ease: [0.22, 1, 0.36, 1],
-            }}
-            className="group relative p-8 lg:p-10 border-r border-b border-border hover:bg-card transition-all duration-700 cursor-default"
+            className="why-card group relative p-8 lg:p-10 border-r border-b border-border hover:bg-card transition-all duration-700 cursor-default hover-lift"
+            style={{ opacity: 0 }}
           >
             {/* Number watermark */}
             <span className="absolute top-4 right-6 font-serif text-6xl font-bold text-border/50 group-hover:text-accent/10 transition-colors duration-700">
               {reason.number}
             </span>
 
-            <motion.div
-              className="mb-6 relative z-10"
-              whileHover={{ rotate: [0, -10, 10, 0] }}
-              transition={{ duration: 0.5 }}
-            >
+            <div className="mb-6 relative z-10">
               <reason.icon
                 size={32}
                 className="text-accent group-hover:scale-110 transition-transform duration-500"
                 strokeWidth={1.5}
               />
-            </motion.div>
+            </div>
             <h3 className="heading-sm text-foreground mb-4 relative z-10">{reason.title}</h3>
             <p className="body-md text-muted-foreground relative z-10">{reason.description}</p>
 
             {/* Bottom accent line */}
-            <motion.div
-              className="absolute bottom-0 left-0 h-[2px] bg-accent"
-              initial={{ width: 0 }}
-              whileInView={{ width: "100%" }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: i * 0.15 + 0.5 }}
+            <div
+              className="accent-line absolute bottom-0 left-0 w-full h-[2px] bg-accent origin-left"
+              style={{ transform: "scaleX(0)" }}
             />
-          </motion.div>
+          </div>
         ))}
       </div>
     </section>

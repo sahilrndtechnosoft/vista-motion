@@ -199,4 +199,68 @@
   .font-sans {
     font-family: var(--font-sans);
   }
+
+  /* Premium micro-interactions */
+  .hover-lift {
+    @apply transition-all duration-500 ease-out;
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px hsl(0 0% 0% / 0.12);
+  }
+
+  .img-hover-scale {
+    @apply overflow-hidden;
+  }
+
+  .img-hover-scale img {
+    @apply transition-transform duration-700 ease-out will-change-transform;
+  }
+
+  .img-hover-scale:hover img {
+    transform: scale(1.06);
+  }
+
+  .link-underline-grow {
+    @apply relative inline-block;
+  }
+
+  .link-underline-grow::after {
+    content: '';
+    @apply absolute bottom-0 left-0 w-full h-px bg-accent;
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .link-underline-grow:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+
+  /* Nav fade on scroll - controlled via JS but styled here */
+  .nav-reveal {
+    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.5s ease;
+  }
+
+  .nav-hidden {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+
+  /* GSAP reveal helper - elements start invisible, GSAP animates them */
+  .gsap-reveal {
+    opacity: 0;
+    will-change: transform, opacity;
+  }
+
+  /* Smooth image parallax container */
+  .parallax-container {
+    @apply overflow-hidden;
+  }
+
+  .parallax-container img {
+    will-change: transform;
+  }
 }
