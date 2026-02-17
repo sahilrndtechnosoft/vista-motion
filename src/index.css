@@ -4,58 +4,58 @@
 
 @layer base {
   :root {
-    --background: 40 20% 97%;
+    --background: 0 0% 100%;
     --foreground: 0 0% 12%;
 
-    --card: 40 15% 95%;
+    --card: 0 0% 98%;
     --card-foreground: 0 0% 12%;
 
-    --popover: 40 20% 97%;
+    --popover: 0 0% 100%;
     --popover-foreground: 0 0% 12%;
 
-    --primary: 156 61% 15%;
-    --primary-foreground: 40 20% 97%;
+    --primary: 73 56% 50%;
+    --primary-foreground: 0 0% 100%;
 
     --secondary: 0 0% 12%;
-    --secondary-foreground: 40 20% 97%;
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 40 10% 90%;
+    --muted: 0 0% 95%;
     --muted-foreground: 0 0% 40%;
 
-    --accent: 25 95% 53%;
+    --accent: 73 56% 50%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 40 10% 85%;
-    --input: 40 10% 85%;
-    --ring: 156 61% 15%;
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 73 56% 50%;
 
     --radius: 0.25rem;
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 156 61% 15%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 156 61% 15%;
+    --sidebar-primary: 73 56% 50%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 0 0% 96%;
+    --sidebar-accent-foreground: 0 0% 12%;
+    --sidebar-border: 0 0% 91%;
+    --sidebar-ring: 73 56% 50%;
 
     /* Custom tokens */
-    --forest: 156 61% 15%;
-    --forest-light: 156 40% 25%;
+    --forest: 73 56% 50%;
+    --forest-light: 73 45% 60%;
     --charcoal: 0 0% 12%;
     --charcoal-light: 0 0% 20%;
-    --warm-orange: 25 95% 53%;
-    --warm-orange-hover: 25 95% 46%;
-    --cream: 40 20% 97%;
-    --cream-dark: 40 15% 92%;
-    --warm-gray: 40 10% 70%;
+    --warm-orange: 73 56% 45%;
+    --warm-orange-hover: 73 56% 40%;
+    --cream: 0 0% 100%;
+    --cream-dark: 0 0% 95%;
+    --warm-gray: 0 0% 70%;
 
     /* Font families */
-    --font-serif: 'Playfair Display', Georgia, serif;
+    --font-serif: 'TT Ramillas Trl', 'TT Ramillas', Georgia, serif;
     --font-sans: 'DM Sans', system-ui, sans-serif;
 
     /* Shadows */
@@ -66,24 +66,24 @@
 
   .dark {
     --background: 0 0% 8%;
-    --foreground: 40 20% 95%;
+    --foreground: 0 0% 95%;
     --card: 0 0% 12%;
-    --card-foreground: 40 20% 95%;
+    --card-foreground: 0 0% 95%;
     --popover: 0 0% 12%;
-    --popover-foreground: 40 20% 95%;
-    --primary: 156 50% 35%;
+    --popover-foreground: 0 0% 95%;
+    --primary: 73 56% 50%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 40 10% 85%;
+    --secondary: 0 0% 85%;
     --secondary-foreground: 0 0% 12%;
     --muted: 0 0% 18%;
-    --muted-foreground: 40 10% 60%;
-    --accent: 25 95% 53%;
+    --muted-foreground: 0 0% 60%;
+    --accent: 73 56% 50%;
     --accent-foreground: 0 0% 100%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
     --border: 0 0% 20%;
     --input: 0 0% 20%;
-    --ring: 156 50% 35%;
+    --ring: 73 56% 50%;
   }
 }
 
