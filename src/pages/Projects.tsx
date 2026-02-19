@@ -5,6 +5,8 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Draggable } from "gsap/Draggable";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import ShaderImage from "@/components/ShaderImage";
+import { initVelocityProxy } from "@/lib/velocityProxy";
 import project1 from "@/assets/project-1.jpg";
 import project2 from "@/assets/project-2.jpg";
 import project3 from "@/assets/project-3.jpg";
@@ -34,7 +36,7 @@ function buildSeamlessLoop(
     paused: true,
     repeat: -1,
     onRepeat() {
-      // @ts-ignore - workaround for GSAP edge case
+      // @ts-ignore
       if (this._time === this._dur) this._tTime += this._dur - 0.01;
     },
   });
@@ -49,20 +51,11 @@ function buildSeamlessLoop(
 
   rawSequence.time(startTime);
   seamlessLoop
-    .to(rawSequence, {
-      time: loopTime,
-      duration: loopTime - startTime,
-      ease: "none",
-    })
+    .to(rawSequence, { time: loopTime, duration: loopTime - startTime, ease: "none" })
     .fromTo(
       rawSequence,
       { time: overlap * spacing + 1 },
-      {
-        time: startTime,
-        duration: startTime - (overlap * spacing + 1),
-        immediateRender: false,
-        ease: "none",
-      }
+      { time: startTime, duration: startTime - (overlap * spacing + 1), immediateRender: false, ease: "none" }
     );
 
   return seamlessLoop;
@@ -87,14 +80,9 @@ const Projects = () => {
     const snapTime = gsap.utils.snap(spacing);
     const snappedTime = snapTime(offset);
     const progress =
-      (snappedTime - seamlessLoop.duration() * iterationRef.current) /
-      seamlessLoop.duration();
+      (snappedTime - seamlessLoop.duration() * iterationRef.current) / seamlessLoop.duration();
     const progressToScroll = (p: number) =>
-      gsap.utils.clamp(
-        1,
-        trigger.end - 1,
-        gsap.utils.wrap(0, 1, p) * trigger.end
-      );
+      gsap.utils.clamp(1, trigger.end - 1, gsap.utils.wrap(0, 1, p) * trigger.end);
     const scroll = progressToScroll(progress);
 
     if (progress >= 1 || progress < 0) {
@@ -107,13 +95,17 @@ const Projects = () => {
   }, []);
 
   useEffect(() => {
+    // Initialize the shared velocity proxy for shader distortion
+    initVelocityProxy();
+  }, []);
+
+  useEffect(() => {
     if (!galleryRef.current || !cardsRef.current || !dragProxyRef.current) return;
 
     const spacing = 0.1;
     const cards = gsap.utils.toArray<HTMLElement>(".carousel-card");
     if (!cards.length) return;
 
-    // Initial state
     gsap.set(cards, { xPercent: 400, opacity: 0, scale: 0 });
 
     const animateFunc = (element: HTMLElement) => {
@@ -121,16 +113,7 @@ const Projects = () => {
       tl.fromTo(
         element,
         { scale: 0, opacity: 0 },
-        {
-          scale: 1,
-          opacity: 1,
-          zIndex: 100,
-          duration: 0.5,
-          yoyo: true,
-          repeat: 1,
-          ease: "power1.in",
-          immediateRender: false,
-        }
+        { scale: 1, opacity: 1, zIndex: 100, duration: 0.5, yoyo: true, repeat: 1, ease: "power1.in", immediateRender: false }
       ).fromTo(
         element,
         { xPercent: 400 },
@@ -149,9 +132,7 @@ const Projects = () => {
 
     const scrub = gsap.to(playhead, {
       offset: 0,
-      onUpdate() {
-        seamlessLoop.time(wrapTime(playhead.offset));
-      },
+      onUpdate() { seamlessLoop.time(wrapTime(playhead.offset)); },
       duration: 0.5,
       ease: "power3",
       paused: true,
@@ -171,8 +152,7 @@ const Projects = () => {
           trigger.scroll(self.end - 2);
           trigger.update();
         } else {
-          scrub.vars.offset =
-            (iterationRef.current + self.progress) * seamlessLoop.duration();
+          scrub.vars.offset = (iterationRef.current + self.progress) * seamlessLoop.duration();
           scrub.invalidate().restart();
         }
       },
@@ -184,21 +164,15 @@ const Projects = () => {
     const onScrollEnd = () => scrollToOffset(scrub.vars.offset as number);
     ScrollTrigger.addEventListener("scrollEnd", onScrollEnd);
 
-    // Draggable
     Draggable.create(dragProxyRef.current, {
       type: "x",
       trigger: cardsRef.current,
-      onPress() {
-        (this as any).startOffset = scrub.vars.offset;
-      },
+      onPress() { (this as any).startOffset = scrub.vars.offset; },
       onDrag() {
-        scrub.vars.offset =
-          (this as any).startOffset + ((this as any).startX - this.x) * 0.001;
+        scrub.vars.offset = (this as any).startOffset + ((this as any).startX - this.x) * 0.001;
         scrub.invalidate().restart();
       },
-      onDragEnd() {
-        scrollToOffset(scrub.vars.offset as number);
-      },
+      onDragEnd() { scrollToOffset(scrub.vars.offset as number); },
     });
 
     return () => {
@@ -206,9 +180,6 @@ const Projects = () => {
       trigger.kill();
       scrub.kill();
       seamlessLoop.kill();
-      ScrollTrigger.getAll().forEach((st) => {
-        if (st.vars.pin === galleryRef.current) st.kill();
-      });
     };
   }, [scrollToOffset]);
 
@@ -255,48 +226,37 @@ const Projects = () => {
                 to={`/projects/${project.id}`}
                 className="group block w-[20rem] h-[28rem] md:w-[24rem] md:h-[32rem] rounded-2xl overflow-hidden relative shadow-elevated"
               >
-                <img
+                <ShaderImage
                   src={project.image}
                   alt={project.title}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  loading="lazy"
+                  className="w-full h-full"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-secondary/90 via-secondary/30 to-transparent" />
-                <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
+                <div className="absolute inset-0 bg-gradient-to-t from-secondary/90 via-secondary/30 to-transparent pointer-events-none" />
+                <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8 pointer-events-none">
                   <p className="label-text text-accent mb-2">{project.category}</p>
-                  <h3 className="heading-sm text-secondary-foreground mb-1">
-                    {project.title}
-                  </h3>
-                  <p className="body-md text-secondary-foreground/60">
-                    {project.location}
-                  </p>
-                  <p className="label-text text-secondary-foreground/80 mt-3">
-                    {project.price}
-                  </p>
+                  <h3 className="heading-sm text-secondary-foreground mb-1">{project.title}</h3>
+                  <p className="body-md text-secondary-foreground/60">{project.location}</p>
+                  <p className="label-text text-secondary-foreground/80 mt-3">{project.price}</p>
                 </div>
               </Link>
             </li>
           ))}
         </ul>
 
-        {/* Drag proxy (invisible) */}
+        {/* Drag proxy */}
         <div ref={dragProxyRef} className="drag-proxy absolute inset-0 pointer-events-none" />
 
         {/* Navigation */}
         <div className="absolute bottom-12 flex items-center gap-6 z-10">
           <button
-            onClick={() =>
-              scrollToOffset((scrubRef.current?.vars.offset as number) - 0.1)
-            }
+            onClick={() => scrollToOffset((scrubRef.current?.vars.offset as number) - 0.1)}
             className="prev w-14 h-14 rounded-full border border-border bg-background/80 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-accent hover:text-accent-foreground hover:border-accent transition-all duration-300 hover-lift"
             aria-label="Previous project"
           >
             <ChevronLeft size={20} />
           </button>
           <button
-            onClick={() =>
-              scrollToOffset((scrubRef.current?.vars.offset as number) + 0.1)
-            }
+            onClick={() => scrollToOffset((scrubRef.current?.vars.offset as number) + 0.1)}
             className="next w-14 h-14 rounded-full border border-border bg-background/80 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-accent hover:text-accent-foreground hover:border-accent transition-all duration-300 hover-lift"
             aria-label="Next project"
           >
